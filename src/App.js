@@ -60,15 +60,15 @@ class App extends Component {
   componentDidUpdate(prevProps) {
     const oldQuery = queryString.parse(prevProps.location.search);
     const newQuery = queryString.parse(this.props.location.search);
-    if (oldQuery.status === newQuery.status) {
+    if (oldQuery.status === newQuery.status && oldQuery.effort_gte === newQuery.effort_gte &&
+      oldQuery.effort_lte === newQuery.effort_lte) {
       return;
     }
     this.loadData();
-
   }
 
-  setFilter(query) {
-    this.props.history.push({ pathname: this.props.location.pathname, query });
+  setFilter(query){
+    this.props.history.push({ pathname: this.props.location.pathname });
   }
 
   loadData() {
@@ -124,7 +124,7 @@ class App extends Component {
           <h4>ISSUE TRACKER</h4>
         </div>
         <div className="content">
-          <IssueFilter setFilter={this.setFilter} />
+        <IssueFilter setFilter={this.setFilter} initFilter={this.props.location} />
           <hr /><br />
           <IssueTable issues={this.state.issues} />
           <hr /><br />
