@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient, ObjectId } = require('mongodb');
 const Issue = require('./issue');
 const path = require('path');
 
@@ -49,12 +49,38 @@ app.post('/api/issues', (req, res) => {
     });
 });
 
+
+app.get('/api/issues/:id', (req, res, next) => {
+    let issueId;
+    try {
+        issueId = new ObjectId(req.params.id);
+        // console.log(issueId);
+    } catch (error) {
+        res.status(422).json({
+            message: `Invalid Issue format ${error}`
+        })
+    }
+    db.collection('issues').find({_id: issueId}).limit(1)
+        .next()
+        .then(issue => {
+            console.log(issue );
+            if (!issue) res.status(404).json({
+                message: `No such Issue: ${issueId}`
+            });
+            else res.json(issue);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        });
+})
+
 app.get('*', (req, res) => {
     res.sendFile(path.resolve('public/index.html'));
 });
 
 
-MongoClient.connect('mongodb://localhost/issuetracker', { useNewUrlParser: true }).then(connection => {
+MongoClient.connect('mongodb://localhost/issuetracker').then(connection => {
     db = connection.db('issuetracker');
     app.listen(4003, () => {
         console.log('App started on port 4003');
