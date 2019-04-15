@@ -7,21 +7,29 @@ import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 const axios = require('axios');
 
-const IssueRow = (props) => (
-  <tr>
-    <td><Link to={`/issues/${props.issue._id}`}>{props.issue._id.substr(-4)}</Link></td>
-    <td>{props.issue.status}</td>
-    <td>{props.issue.owner}</td>
-    <td>{props.issue.created.toDateString()}</td>
-    <td>{props.issue.effort}</td>
-    <td>{props.issue.completionDate ? props.issue.completionDate.toDateString() : ''}</td>
-    <td>{props.issue.title}</td>
-  </tr>
-)
+const IssueRow = (props) => {
+  function onDeleteClick() {
+    props.deleteIssue(props.issue._id);
+  }
+  return (
+    <tr>
+      <td><Link to={`/issues/${props.issue._id}`}>{props.issue._id.substr(-4)}</Link></td>
+      <td>{props.issue.status}</td>
+      <td>{props.issue.owner}</td>
+      <td>{props.issue.created.toDateString()}</td>
+      <td>{props.issue.effort}</td>
+      <td>{props.issue.completionDate
+        ? props.issue.completionDate.toDateString()
+        : ''}</td>
+      <td>{props.issue.title}</td>
+      <td><button onClick={onDeleteClick}>Delete</button></td>
+    </tr>
+  );
+};
 
 function IssueTable(props) {
   const issueRows = props.issues.map(issue =>
-    <IssueRow key={issue._id} issue={issue} />);
+    <IssueRow key={issue._id} issue={issue} deleteIssue={props.deleteIssue}/>);
   return (
     <table className="bordered-table">
       <thead>
@@ -33,6 +41,7 @@ function IssueTable(props) {
           <th>Effort</th>
           <th>Completion Date</th>
           <th>Title</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>{issueRows}</tbody>
@@ -51,6 +60,7 @@ class App extends Component {
     this.loadData = this.loadData.bind(this);
     this.setFilter = this.setFilter.bind(this);
     this.createIssue = this.createIssue.bind(this);
+    this.deleteIssue = this.deleteIssue.bind(this);
   }
 
   componentDidMount() {
@@ -67,7 +77,14 @@ class App extends Component {
     this.loadData();
   }
 
-  setFilter(query){
+  deleteIssue(id) {
+    fetch(`http://localhost:4003/api/issues/${id}`, { method: 'DELETE' }).then(response => {
+      if (!response.ok) alert('Failed to delete issue');
+      else this.loadData();
+    });
+  }
+
+  setFilter(query) {
     this.props.history.push({ pathname: this.props.location.pathname });
   }
 
@@ -124,9 +141,9 @@ class App extends Component {
           <h4>ISSUE TRACKER</h4>
         </div>
         <div className="content">
-        <IssueFilter setFilter={this.setFilter} initFilter={this.props.location} />
+          <IssueFilter setFilter={this.setFilter} initFilter={this.props.location} />
           <hr /><br />
-          <IssueTable issues={this.state.issues} />
+          <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
           <hr /><br />
           <IssueAdd createIssue={this.createIssue} />
         </div>

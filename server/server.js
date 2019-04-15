@@ -60,10 +60,10 @@ app.get('/api/issues/:id', (req, res, next) => {
             message: `Invalid Issue format ${error}`
         })
     }
-    db.collection('issues').find({_id: issueId}).limit(1)
+    db.collection('issues').find({ _id: issueId }).limit(1)
         .next()
         .then(issue => {
-            console.log(issue );
+            console.log(issue);
             if (!issue) res.status(404).json({
                 message: `No such Issue: ${issueId}`
             });
@@ -75,6 +75,53 @@ app.get('/api/issues/:id', (req, res, next) => {
         });
 })
 
+app.put('/api/issues/:id', (req, res) => {
+    let issueId;
+    try {
+        issueId = new ObjectId(req.params.id);
+    } catch (error) {
+        res.status(422).json({ message: `Invalid issue ID format: ${error}` });
+        return;
+    }
+    const issue = req.body;
+    delete issue._id;
+    const err = Issue.validateIssue(issue);
+    if (err) {
+        res.status(422).json({ message: `Invalid request: ${err}` });
+        return;
+    }
+    db.collection('issues').update({ _id: issueId }, Issue.convertIssue(issue)).then(() =>
+        db.collection('issues').find({ _id: issueId }).limit(1)
+            .next()
+    )
+        .then(savedIssue => {
+            res.json(savedIssue);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        });
+});
+
+app.delete('/api/issues/:id', (req, res) => {
+    let issueId;
+    try {
+      issueId = new ObjectId(req.params.id);
+    } catch (error) {
+      res.status(422).json({ message: `Invalid issue ID format: ${error}` });
+      return;
+    }
+    db.collection('issues').deleteOne({ _id: issueId }).then((deleteResult) => {
+      if (deleteResult.result.n === 1) res.json({ status: 'OK' });
+      else res.json({ status: 'Warning: object not found' });
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(500).json({ message: `Internal Server Error: ${error}` });
+    });
+  });
+
+  
 app.get('*', (req, res) => {
     res.sendFile(path.resolve('public/index.html'));
 });
