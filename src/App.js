@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
 import './App.css';
+import { Navbar, Nav, Table, Button }
+  from 'react-bootstrap';
 import { IssueAdd } from './issueAdd';
 import IssueFilter from './issueFilter';
 import queryString from 'query-string';
@@ -22,16 +24,16 @@ const IssueRow = (props) => {
         ? props.issue.completionDate.toDateString()
         : ''}</td>
       <td>{props.issue.title}</td>
-      <td><button onClick={onDeleteClick}>Delete</button></td>
+      <td><Button variant="outline-danger" size="sm" onClick={onDeleteClick}>Delete</Button></td>
     </tr>
   );
 };
 
 function IssueTable(props) {
   const issueRows = props.issues.map(issue =>
-    <IssueRow key={issue._id} issue={issue} deleteIssue={props.deleteIssue}/>);
+    <IssueRow key={issue._id} issue={issue} deleteIssue={props.deleteIssue} />);
   return (
-    <table className="bordered-table">
+    <Table striped bordered hover variant="dark">
       <thead>
         <tr>
           <th>Id</th>
@@ -45,9 +47,25 @@ function IssueTable(props) {
         </tr>
       </thead>
       <tbody>{issueRows}</tbody>
-    </table>
+    </Table>
   );
 }
+
+const Header = () => (
+  <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+  <Navbar.Brand href="/issuesList">Issue Tracker</Navbar.Brand>
+  <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+  <Navbar.Collapse id="responsive-navbar-nav">
+    <Nav className="m-auto">
+      <Nav.Link href="/issuesList">Issues</Nav.Link>
+      <Nav.Link href="/reports">Reports</Nav.Link>
+    </Nav>
+    <Nav className="pull-right right">
+      <Nav.Link> <b> + </b>  Create Issue</Nav.Link>
+    </Nav>
+  </Navbar.Collapse>
+</Navbar>
+);
 
 const baseUrl = 'http://localhost:4003';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -136,18 +154,19 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="App">
-        <div className="header">
-          <h4>ISSUE TRACKER</h4>
+      <div>
+        <Header />
+        <div className="container-fluid">
+          <div className="content">
+              <IssueFilter setFilter={this.setFilter} initFilter={this.props.location.search} />
+              <br />
+              <br />
+            <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue} />
+            <hr /><br />
+            <IssueAdd createIssue={this.createIssue} />
+          </div>
+          <div className="footer">FOOTIE</div>
         </div>
-        <div className="content">
-          <IssueFilter setFilter={this.setFilter} initFilter={this.props.location} />
-          <hr /><br />
-          <IssueTable issues={this.state.issues} deleteIssue={this.deleteIssue}/>
-          <hr /><br />
-          <IssueAdd createIssue={this.createIssue} />
-        </div>
-        <div className="footer">FOOTIE</div>
       </div>
     );
   }

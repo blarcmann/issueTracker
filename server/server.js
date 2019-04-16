@@ -29,12 +29,13 @@ app.get('/api/issues', (req, res) => {
 
 app.post('/api/issues', (req, res) => {
     const newIssue = req.body;
-
     newIssue.created = new Date();
+    console.log(newIssue);
     if (!newIssue.status) {
         newIssue.status = 'New Issue';
     }
     const err = Issue.validateIssue(newIssue);
+    console.log(newIssue);
     if (err) {
         res.status(422).json({ message: `Invalid requrest: ${err}` });
         return;
@@ -121,7 +122,7 @@ app.delete('/api/issues/:id', (req, res) => {
     });
   });
 
-  
+
 app.get('*', (req, res) => {
     res.sendFile(path.resolve('public/index.html'));
 });

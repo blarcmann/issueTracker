@@ -1,9 +1,10 @@
 import React from 'react';
+import { Col, Row, ButtonToolbar, Button, Form } from 'react-bootstrap';
 
 class IssueFilter extends React.Component {
   constructor(props) {
     super(props);
-
+    console.log(props);
     this.state = {
       status: props.initFilter.status || '',
       effort_gte: props.initFilter.effort_gte || '',
@@ -18,15 +19,6 @@ class IssueFilter extends React.Component {
     this.resetFilter = this.resetFilter.bind(this);
     this.clearFilter = this.clearFilter.bind(this);
   }
-
-  // setFilterOpen(e) {
-  //   e.preventDefault();
-  //   this.props.setFilter({ status: 'Open' });
-  // }
-  // setFilterAssigned(e) {
-  //   e.preventDefault();
-  //   this.props.setFilter({ status: 'Assigned' });
-  // }
 
   componentWillReceiveProps(newProps) {
     this.setState({
@@ -90,31 +82,51 @@ class IssueFilter extends React.Component {
 
   render() {
     return (
-      <div>
-        Status:
-        <select value={this.state.status} onChange={this.onChangeStatus}>
-          <option value="">(Any)</option>
-          <option value="New">New</option>
-          <option value="Open">Open</option>
-          <option value="Assigned">Assigned</option>
-          <option value="Fixed">Fixed</option>
-          <option value="Verified">Verified</option>
-          <option value="Closed">Closed</option>
-        </select>
-        &nbsp;Effort between:
-        <input size={5}
-          value={this.state.effort_gte}
-          onChange={this.onChangeEffortGte} />
-        &nbsp;-&nbsp;
-        <input size={5}
-          value={this.state.effort_lte}
-          onChange={this.onChangeEffortLte} />
-        <button onClick={this.applyFilter}>Apply</button>
-        <button onClick={this.resetFilter} disabled={!this.state.changed}>Reset</button>
-        <button onClick={this.clearFilter}>Clear</button>
-      </div >
+      <Row>
+        <Col xs={12} sm={6} md={4}>
+          <Form.Group>
+            <Form.Label>Status</Form.Label>
+            <Form.Control as="select" value={this.state.status} onChange={this.onChangeStatus}>
+              <option value="">(Any)</option>
+              <option value="New">New</option>
+              <option value="Open">Open</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Fixed">Fixed</option>
+              <option value="Verified">Verified</option>
+              <option value="Closed">Closed</option>
+            </Form.Control>
+          </Form.Group>
+        </Col>
+
+        <Col xs={12} sm={6} md={4}>
+          <Form.Group>
+           <Form.Label>Effort</Form.Label>
+            <Row>
+              <Col>
+                <Form.Control value={this.state.effort_gte} onChange={this.onChangeEffortGte} placeholder="MIN"/>
+              </Col>
+              <Col>
+                <Form.Control value={this.state.effort_lte} onChange={this.onChangeEffortLte} placeholder="MAX" />
+              </Col>
+            </Row>
+          </Form.Group>
+        </Col>
+
+        <Col xs={12} sm={6} md={4}>
+          <Form.Group>
+          <Form.Label>&nbsp;</Form.Label>
+            <ButtonToolbar>
+              <Button variant="warning" onClick={this.applyFilter}>Apply</Button>&nbsp;
+              <Button variant="primary" onClick={this.resetFilter} disabled={!this.state.changed}>Reset</Button>&nbsp;
+              <Button onClick={this.clearFilter} variant="success">Clear</Button>&nbsp;
+            </ButtonToolbar>
+          </Form.Group>
+        </Col>
+      </Row >
     );
   }
 }
+
+
 
 export default IssueFilter;
