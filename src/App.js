@@ -156,6 +156,7 @@ class App extends Component {
     return (
       <div>
         <Header />
+        <br/>
         <div className="container-fluid">
           <div className="content">
               <IssueFilter setFilter={this.setFilter} initFilter={this.props.location.search} />

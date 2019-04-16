@@ -86,7 +86,7 @@ class IssueFilter extends React.Component {
         <Col xs={12} sm={6} md={4}>
           <Form.Group>
             <Form.Label>Status</Form.Label>
-            <Form.Control as="select" value={this.state.status} onChange={this.onChangeStatus}>
+            <Form.Control size="sm" as="select" value={this.state.status} onChange={this.onChangeStatus}>
               <option value="">(Any)</option>
               <option value="New">New</option>
               <option value="Open">Open</option>
@@ -103,10 +103,10 @@ class IssueFilter extends React.Component {
            <Form.Label>Effort</Form.Label>
             <Row>
               <Col>
-                <Form.Control value={this.state.effort_gte} onChange={this.onChangeEffortGte} placeholder="MIN"/>
+                <Form.Control size="sm" value={this.state.effort_gte} onChange={this.onChangeEffortGte} placeholder="MIN"/>
               </Col>
               <Col>
-                <Form.Control value={this.state.effort_lte} onChange={this.onChangeEffortLte} placeholder="MAX" />
+                <Form.Control size="sm" value={this.state.effort_lte} onChange={this.onChangeEffortLte} placeholder="MAX" />
               </Col>
             </Row>
           </Form.Group>
@@ -116,9 +116,9 @@ class IssueFilter extends React.Component {
           <Form.Group>
           <Form.Label>&nbsp;</Form.Label>
             <ButtonToolbar>
-              <Button variant="warning" onClick={this.applyFilter}>Apply</Button>&nbsp;
-              <Button variant="primary" onClick={this.resetFilter} disabled={!this.state.changed}>Reset</Button>&nbsp;
-              <Button onClick={this.clearFilter} variant="success">Clear</Button>&nbsp;
+              <Button size="sm" variant="warning" onClick={this.applyFilter}>Apply</Button>&nbsp;
+              <Button size="sm" variant="primary" onClick={this.resetFilter} disabled={!this.state.changed}>Reset</Button>&nbsp;
+              <Button size="sm" onClick={this.clearFilter} variant="success">Clear</Button>&nbsp;
             </ButtonToolbar>
           </Form.Group>
         </Col>

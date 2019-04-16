@@ -1,4 +1,7 @@
 import React from 'react';
+import { Form, Button, Row, Col } from 'react-bootstrap';
+
+
 export class IssueAdd extends React.Component {
     constructor() {
         super();
@@ -20,11 +23,17 @@ export class IssueAdd extends React.Component {
     render() {
         return (
             <div>
-                <form name="issueAdd" onSubmit={this.handleSubmit}>
-                    <input type="text" name="owner" placeholder="Owner" />
-                    <input type="text" name="title" placeholder="Title" />
-                    <button>Create New Issue</button>
-                </form>
+                <Form name="issueAdd" onSubmit={this.handleSubmit}>
+                <Row>
+                    <Col>
+                     <Form.Control type="text" name="owner" placeholder="Owner" /></Col>
+                    <Col>
+                    <Form.Control type="text" name="title" placeholder="Title" /></Col>
+                    <Col>
+                        <Button>Add Issue</Button>
+                    </Col>
+                </Row>
+                </Form>
             </div>
         )
     }

@@ -1,7 +1,9 @@
 import React from 'react';
 import NumInput from './numInput';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
+// import Form from 'react-bootstrap/Form'
 import DateInput from './dateInput';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 class IssueEdit extends React.Component {
     constructor(props) {
@@ -12,7 +14,10 @@ class IssueEdit extends React.Component {
                 completionDate: null, created: null,
             },
             invalidFields: {},
+            showingValidation: false,
         };
+        this.dismissValidation = this.dismissValidation.bind(this);
+        this.showValidation = this.showValidation.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onValidityChange = this.onValidityChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -30,6 +35,7 @@ class IssueEdit extends React.Component {
 
     onSubmit(event) {
         event.preventDefault();
+        this.showValidation();
         if (Object.keys(this.state.invalidFields).length !== 0) {
             return;
         }
@@ -55,6 +61,13 @@ class IssueEdit extends React.Component {
         }).catch(err => {
             alert(`Error in sending data to server: ${err.message}`);
         });
+    }
+
+    showValidation() {
+        this.setState({ showingValidation: true });
+    }
+    dismissValidation() {
+        this.setState({ showingValidation: false });
     }
 
     onValidityChange(event, valid) {
@@ -101,44 +114,74 @@ class IssueEdit extends React.Component {
 
     render() {
         const issue = this.state.issue;
-        const validationMessage = Object.keys(this.state.invalidFields).length === 0
-            ? null
-            : (<div className="error">Please correct invalid fields before submitting.</div>);
+        let validationMessage = null;
+        if (Object.keys(this.state.invalidFields).length !== 0 && this.state.showingValidation) {
+            validationMessage = (
+                <Alert dismissible variant="danger">
+                    Please correct invalid fields before submitting.
+                </Alert>
+            );
+        }
         return (
             <div>
-                <form onSubmit={this.onSubmit}>
-                    ID: {issue._id}
-                    <br />
-                    Created: {issue.created ? issue.created.toDateString() : ''}
-                    <br />
-                    Status: <select name="status" value={issue.status} onChange={this.onChange}>
-                        <option value="New">New</option>
-                        <option value="Open">Open</option>
-                        <option value="Assigned">Assigned</option>
-                        <option value="Fixed">Fixed</option>
-                        <option value="Verified">Verified</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                    <br />
-                    Owner: <input name="owner" value={issue.owner}
-                        onChange={this.onChange} />
-                    <br />
-                    Effort: <NumInput size={5} name="effort" value={issue.effort}
-                        onChange={this.onChange} />
-                    <br />
-                    Completion Date: <DateInput
-                        name="completionDate" value={issue.completionDate}
-                        onChange={this.onChange}
-                        onValidityChange={this.onValidityChange}
-                    />
-                    <br />
-                    Title: <input name="title" size={50} value={issue.title}
-                        onChange={this.onChange} />
-                    <br />
-                    {validationMessage}
-                    <button type="submit">Submit</button>
-                    <Link to="/issuesList">Back to issue list</Link>
-                </form>
+                <Form onSubmit={this.onSubmit}>
+                    <Row>
+                        <Col md={3} > <Form.Label>ID: </Form.Label> </Col>
+                        <Col md={9} > {issue._id} </Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Created: </Form.Label></Col>
+                        <Col md={9}>{issue.created ? issue.created.toDateString() : ''}</Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Status</Form.Label></Col>
+                        <Col md={9}>
+                            <Form.Control as="select" name="status" value={issue.status} onChange={this.onChange}>
+                                <option value="New">New</option>
+                                <option value="Open">Open</option>
+                                <option value="Assigned">Assigned</option>
+                                <option value="Fixed">Fixed</option>
+                                <option value="Verified">Verified</option>
+                                <option value="Closed">Closed</option>
+                            </Form.Control>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Owner: </Form.Label></Col>
+                        <Col md={9}>
+                            <Form.Control name="owner" value={issue.owner} onChange={this.onChange} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Effort: </Form.Label></Col>
+                        <Col md={9}>
+                            <NumInput size={5} name="effort" value={issue.effort} onChange={this.onChange} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Completion Date: </Form.Label></Col>
+                        <Col md={9}>
+                            <DateInput name="completionDate" value={issue.completionDate} onChange={this.onChange}
+                                onValidityChange={this.onValidityChange} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md={3}><Form.Label>Title: </Form.Label></Col>
+                        <Col md={9}>
+                            <Form.Control name="title" size={50} value={issue.title} onChange={this.onChange} />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="m-auto">
+                            <Button type="submit" variant="dark">Save</Button>
+                            &nbsp;
+                        <a href="/issuesList" variant="warning">Back to list</a>
+                        </Col>
+                    </Row>
+                </Form>
+                <Row>
+                    <Col sm={12} md={8}>{validationMessage}</Col>
+                </Row>
             </div>
         );
     }
@@ -149,3 +192,38 @@ class IssueEdit extends React.Component {
 // };
 
 export default IssueEdit;
+
+
+// <form onSubmit={this.onSubmit}>
+//                     ID: {issue._id}
+//                     <br />
+//                     Created: {issue.created ? issue.created.toDateString() : ''}
+//                     <br />
+//                     Status: <select name="status" value={issue.status} onChange={this.onChange}>
+//                         <option value="New">New</option>
+//                         <option value="Open">Open</option>
+//                         <option value="Assigned">Assigned</option>
+//                         <option value="Fixed">Fixed</option>
+//                         <option value="Verified">Verified</option>
+//                         <option value="Closed">Closed</option>
+//                     </select>
+//                     <br />
+//                     Owner: <input name="owner" value={issue.owner}
+//                         onChange={this.onChange} />
+//                     <br />
+//                     Effort: <NumInput size={5} name="effort" value={issue.effort}
+//                         onChange={this.onChange} />
+//                     <br />
+//                     Completion Date: <DateInput
+//                         name="completionDate" value={issue.completionDate}
+//                         onChange={this.onChange}
+//                         onValidityChange={this.onValidityChange}
+//                     />
+//                     <br />
+//                     Title: <input name="title" size={50} value={issue.title}
+//                         onChange={this.onChange} />
+//                     <br />
+//                     {validationMessage}
+//                     <button type="submit">Submit</button>
+//                     <Link to="/issuesList">Back to issue list</Link>
+//                 </form>
